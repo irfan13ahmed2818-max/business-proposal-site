@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SI Studio | Websites Built to Bring Business</title>
+<meta name="description" content="SI Studio designs high-converting websites that generate enquiries and sales. Premium, cinematic web design for businesses that want results.">
+<meta property="og:title" content="SI Studio | Websites Built to Bring Business">
+<meta property="og:description" content="We design high-converting websites that generate enquiries and sales.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===================== DESIGN TOKENS ===================== */
+:root{
+  --bg:#05070A;
+  --bg-emerald-1:#040f0b;
+  --bg-emerald-2:#08150f;
+  --emerald-500:#12664c;
+  --emerald-glow:rgba(20,160,115,0.35);
+  --gold:#D4AF37;
+  --gold-2:#C9A227;
+  --gold-soft:rgba(212,175,55,0.4);
+  --text:#F5F1E6;
+  --text-muted:#B4AC98;
+  --border:rgba(212,175,55,0.16);
+  --font-head:'Cinzel', serif;
+  --font-display:'Playfair Display', serif;
+  --font-body:'Inter', sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-weight:300;
+  line-height:1.6;
+  overflow-x:hidden;
+  position:relative;
+}
+img,svg{display:block; max-width:100%;}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer; background:none; border:none; color:inherit;}
+.container{max-width:1200px; margin:0 auto; padding:0 24px;}
+h1,h2,h3{font-family:var(--font-head); font-weight:600; letter-spacing:0.01em;}
+::selection{background:var(--gold-soft); color:#05070A;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+}
+
+/* ===================== SHARED COMPONENT: AshParticleField (Canvas) ===================== */
+#ash-canvas{
+  position:fixed; inset:0; width:100%; height:100%;
+  z-index:1; pointer-events:none;
+  opacity:0.75;
+}
+
+/* background gradient wash behind canvas */
+.bg-wash{
+  position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 15% 0%, var(--bg-emerald-2), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 30%, rgba(212,175,55,0.06), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, var(--bg-emerald-1), transparent 60%),
+    var(--bg);
+}
+
+main, header, footer{position:relative; z-index:2;}
+
+/* ===================== SHARED COMPONENT: RevealOnScroll ===================== */
+.reveal{
+  opacity:0;
+  transform:translateY(36px);
+  transition:opacity 0.9s cubic-bezier(.16,.8,.24,1), transform 0.9s cubic-bezier(.16,.8,.24,1);
+}
+.reveal.is-visible{opacity:1; transform:translateY(0);}
+.reveal-delay-1.is-visible{transition-delay:0.1s;}
+.reveal-delay-2.is-visible{transition-delay:0.2s;}
+.reveal-delay-3.is-visible{transition-delay:0.3s;}
+.reveal-delay-4.is-visible{transition-delay:0.4s;}
+.reveal-delay-5.is-visible{transition-delay:0.5s;}
+
+/* ===================== SHARED COMPONENT: FlameRing ===================== */
+.flame-ring{
+  position:relative;
+  isolation:isolate;
+}
+.flame-ring::before{
+  content:'';
+  position:absolute;
+  inset:-14px;
+  border-radius:inherit;
+  padding:2px;
+  background:conic-gradient(from 0deg, transparent 0%, var(--gold) 8%, transparent 20%, transparent 50%, var(--gold-2) 58%, transparent 70%, transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  filter:blur(0.5px) drop-shadow(0 0 10px rgba(212,175,55,0.55));
+  animation:flame-spin 7s linear infinite;
+  z-index:-1;
+}
+.flame-ring::after{
+  content:'';
+  position:absolute;
+  inset:-14px;
+  border-radius:inherit;
+  box-shadow:0 0 40px 6px rgba(212,175,55,0.18);
+  z-index:-2;
+}
+@keyframes flame-spin{ to{ transform:rotate(360deg); } }
+
+
+/* ===================== NAV ===================== */
+header.nav{
+  position:fixed; top:0; left:0; right:0; z-index:50;
+  padding:20px 0;
+  transition:background 0.4s ease, padding 0.4s ease, border-color 0.4s ease;
+  border-bottom:1px solid transparent;
+}
+header.nav.scrolled{
+  background:rgba(5,7,10,0.85);
+  backdrop-filter:blur(14px);
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{display:flex; align-items:center; justify-content:space-between;}
+.logo{font-family:var(--font-head); font-size:20px; letter-spacing:0.12em; color:var(--text);}
+.logo span{color:var(--gold);}
+.nav-links{display:flex; gap:36px; align-items:center;}
+.nav-links a{
+  font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted);
+  position:relative; transition:color 0.3s ease;
+}
+.nav-links a::after{
+  content:''; position:absolute; left:0; bottom:-6px; width:0; height:1px; background:var(--gold);
+  transition:width 0.3s ease;
+}
+.nav-links a:hover{color:var(--text);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{
+  font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+  padding:10px 20px; border:1px solid var(--gold-soft); border-radius:2px;
+  color:var(--gold); transition:all 0.3s ease;
+}
+.nav-cta:hover{background:var(--gold); color:#05070A; box-shadow:0 0 24px rgba(212,175,55,0.5);}
+.nav-toggle{display:none; font-size:26px; color:var(--gold);}
+
+@media(max-width:860px){
+  .nav-links{ position:fixed; top:0; right:0; height:100vh; width:min(78vw,320px);
+    background:rgba(5,7,10,0.97); backdrop-filter:blur(20px);
+    flex-direction:column; justify-content:center; align-items:flex-start; gap:28px;
+    padding:40px; transform:translateX(100%); transition:transform 0.45s cubic-bezier(.16,.8,.24,1);
+    border-left:1px solid var(--border);
+  }
+  .nav-links.open{transform:translateX(0);}
+  .nav-toggle{display:block;}
+}
+
+/* ===================== BUTTONS ===================== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:16px 30px; font-size:13px; letter-spacing:0.08em; text-transform:uppercase;
+  border-radius:2px; transition:all 0.35s ease; white-space:nowrap; font-weight:500;
+}
+.btn-primary{
+  background:linear-gradient(135deg, var(--emerald-500), #0a4636);
+  color:#EFFFF8; border:1px solid rgba(20,160,115,0.5);
+  box-shadow:0 0 0 rgba(20,160,115,0.4);
+}
+.btn-primary:hover{
+  box-shadow:0 0 30px rgba(20,160,115,0.55), 0 0 60px rgba(212,175,55,0.15);
+  transform:translateY(-2px);
+}
+.btn-secondary{
+  border:1px solid var(--gold-soft); color:var(--gold);
+}
+.btn-secondary:hover{background:rgba(212,175,55,0.08); box-shadow:0 0 20px rgba(212,175,55,0.25);}
+.btn-ghost{ color:var(--text-muted); border:1px solid rgba(245,241,230,0.14); }
+.btn-ghost:hover{ color:var(--text); border-color:rgba(245,241,230,0.35); }
+.btn-row{display:flex; gap:16px; flex-wrap:wrap;}
+
+/* ===================== HERO ===================== */
+.hero{
+  min-height:100vh; display:flex; align-items:center;
+  padding:150px 0 80px;
+  position:relative;
+}
+.hero-inner{
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  max-width:760px; margin:0 auto;
+}
+.eyebrow{
+  font-size:12px; letter-spacing:0.28em; text-transform:uppercase; color:var(--gold);
+  display:flex; align-items:center; gap:12px; margin-bottom:22px;
+}
+.eyebrow::before{content:''; width:30px; height:1px; background:var(--gold);}
+.hero h1{
+  font-size:clamp(34px, 4.4vw, 58px); line-height:1.15; color:var(--text); margin-bottom:22px;
+}
+.hero h1 em{ font-style:normal; color:var(--gold); }
+.hero p.sub{
+  font-size:17px; color:var(--text-muted); max-width:460px; margin:0 auto 36px; font-weight:300;
+}
+.hero-primary-cta{margin-bottom:20px;}
+.eyebrow{ justify-content:center; }
+.btn-row{ justify-content:center; }
+
+/* ===================== SECTION HEADERS ===================== */
+.section{ padding:130px 0; position:relative; }
+.section-head{ text-align:center; max-width:640px; margin:0 auto 64px; }
+.section-eyebrow{
+  font-size:12px; letter-spacing:0.26em; text-transform:uppercase; color:var(--gold); margin-bottom:14px;
+}
+.section-head h2{ font-size:clamp(28px,3.4vw,42px); margin-bottom:14px; }
+.section-head p{ color:var(--text-muted); font-size:16px; }
+.divider-gold{
+  width:64px; height:2px; margin:22px auto 0;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+/* ===================== WHY CHOOSE US ===================== */
+.feature-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:22px;
+}
+.feature-card{
+  padding:36px 28px; border:1px solid var(--border); border-radius:4px;
+  background:linear-gradient(160deg, rgba(212,175,55,0.03), rgba(255,255,255,0.01));
+  transition:all 0.4s ease; position:relative; overflow:hidden;
+}
+.feature-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(212,175,55,0.4);
+  box-shadow:0 20px 40px -20px rgba(212,175,55,0.25);
+}
+.feature-icon{
+  width:44px; height:44px; margin-bottom:20px; color:var(--gold);
+}
+.feature-card h3{ font-family:var(--font-display); font-style:italic; font-weight:500; font-size:19px; margin-bottom:10px; color:var(--text); }
+.feature-card p{ font-size:14px; color:var(--text-muted); }
+@media(max-width:860px){ .feature-grid{grid-template-columns:1fr 1fr;} }
+@media(max-width:560px){ .feature-grid{grid-template-columns:1fr;} }
+
+/* ===================== TESTIMONIALS ===================== */
+.stats-row{
+  display:flex; justify-content:center; gap:90px; margin:20px auto 70px; flex-wrap:wrap;
+}
+.stat{ text-align:center; }
+.stat .num{ font-family:var(--font-head); font-size:44px; color:var(--gold); }
+.stat .label{ font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); margin-top:6px; }
+
+.testimonial-featured-row{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:50px; margin-bottom:56px;
+}
+.testimonial-card{
+  background:linear-gradient(160deg, rgba(20,160,115,0.05), rgba(0,0,0,0.2));
+  border:1px solid var(--border); border-radius:6px; padding:32px 26px;
+}
+.stars{ display:flex; gap:4px; margin-bottom:16px; }
+.stars svg{ width:15px; height:15px; filter:drop-shadow(0 0 4px rgba(212,175,55,0.7)); }
+.testimonial-card p.quote{ font-size:14.5px; color:var(--text); font-family:var(--font-display); font-style:italic; margin-bottom:20px; line-height:1.65; }
+.testimonial-person{ display:flex; align-items:center; gap:12px; }
+.avatar{
+  width:38px; height:38px; border-radius:50%;
+  background:linear-gradient(135deg, var(--gold), var(--emerald-500));
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-head); font-size:14px; color:#05070A; font-weight:700;
+}
+.person-name{ font-size:13.5px; color:var(--text); }
+.person-role{ font-size:11px; color:var(--text-muted); }
+
+.testimonial-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+.testimonial-card.small p.quote{ font-size:13.5px; }
+@media(max-width:900px){
+  .testimonial-featured-row{grid-template-columns:1fr; gap:60px 24px;}
+  .testimonial-grid{grid-template-columns:1fr;}
+}
+
+/* ===================== PROJECTS ===================== */
+.project-grid{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:26px;
+}
+.project-card{
+  position:relative; border:1px solid var(--border); border-radius:6px; overflow:hidden;
+  background:linear-gradient(160deg, rgba(255,255,255,0.02), rgba(0,0,0,0.3));
+  transition:border-color 0.4s ease, transform 0.4s ease;
+}
+.project-card:hover{ border-color:rgba(212,175,55,0.5); transform:translateY(-4px); }
+.project-thumb{
+  aspect-ratio:16/10; width:100%;
+  background:
+    repeating-linear-gradient(135deg, rgba(212,175,55,0.06) 0 2px, transparent 2px 14px),
+    linear-gradient(150deg, #0b1210, #05070a 70%);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.project-thumb::after{
+  content:''; position:absolute; top:0; left:-60%; width:40%; height:100%;
+  background:linear-gradient(100deg, transparent, rgba(212,175,55,0.18), transparent);
+  transform:skewX(-20deg); transition:left 0.7s ease;
+}
+.project-card:hover .project-thumb::after{ left:130%; }
+.project-thumb span.glyph{ font-family:var(--font-head); font-size:34px; color:rgba(212,175,55,0.35); letter-spacing:0.1em; }
+.project-body{ padding:22px 24px 26px; }
+.project-tag{ font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+.project-body h3{ font-family:var(--font-display); font-style:italic; font-size:18px; font-weight:500; margin-bottom:14px; color:var(--text); }
+.project-live-btn{
+  display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--gold); border-bottom:1px solid rgba(212,175,55,0.4); padding-bottom:3px; transition:all 0.3s ease;
+}
+.project-live-btn:hover{ color:var(--text); border-color:var(--text); gap:12px; }
+.project-card.confidential .project-thumb{ filter:grayscale(0.4) brightness(0.7); }
+.project-card.confidential .project-live-btn{ color:var(--text-muted); border-color:rgba(180,172,152,0.3); cursor:default; }
+@media(max-width:760px){ .project-grid{grid-template-columns:1fr;} }
+
+/* ===================== FAQ ===================== */
+.faq-list{ max-width:760px; margin:0 auto; }
+.faq-item{ border-bottom:1px solid var(--border); }
+.faq-q{
+  width:100%; display:flex; justify-content:space-between; align-items:center;
+  padding:26px 4px; text-align:left; font-family:var(--font-display); font-style:italic; font-size:17px; color:var(--text);
+}
+.faq-q .plus{
+  width:22px; height:22px; position:relative; flex:none; margin-left:20px;
+}
+.faq-q .plus::before, .faq-q .plus::after{
+  content:''; position:absolute; background:var(--gold); top:50%; left:50%;
+}
+.faq-q .plus::before{ width:14px; height:1.4px; transform:translate(-50%,-50%); }
+.faq-q .plus::after{ width:1.4px; height:14px; transform:translate(-50%,-50%); transition:transform 0.35s ease; }
+.faq-item.open .plus::after{ transform:translate(-50%,-50%) rotate(90deg); }
+.faq-a{
+  max-height:0; overflow:hidden; transition:max-height 0.5s cubic-bezier(.16,.8,.24,1);
+}
+.faq-a-inner{ padding:0 4px 28px; color:var(--text-muted); font-size:14.5px; max-width:640px; }
+.faq-item.open .faq-a{ max-height:220px; }
+
+/* ===================== PROCESS ===================== */
+.process-wrap{ max-width:640px; margin:0 auto; }
+.timeline{ position:relative; padding-left:44px; }
+.timeline::before{
+  content:''; position:absolute; left:10px; top:6px; bottom:6px; width:1px;
+  background:linear-gradient(180deg, var(--gold), rgba(212,175,55,0.1));
+}
+.timeline-step{ position:relative; padding-bottom:52px; }
+.timeline-step:last-child{ padding-bottom:0; }
+.timeline-step::before{
+  content:''; position:absolute; left:-44px; top:2px; width:11px; height:11px; border-radius:50%;
+  background:#05070A; border:1.5px solid var(--gold); box-shadow:0 0 0 4px rgba(5,7,10,1), 0 0 14px rgba(212,175,55,0.6);
+  transition:background 0.4s ease;
+}
+.timeline-step.active::before{ background:var(--gold); }
+.timeline-num{ font-size:11px; letter-spacing:0.16em; color:var(--gold); text-transform:uppercase; margin-bottom:6px; }
+.timeline-step h3{ font-family:var(--font-display); font-style:italic; font-size:20px; margin-bottom:8px; color:var(--text); }
+.timeline-step p{ color:var(--text-muted); font-size:14.5px; max-width:420px; }
+
+
+/* ===================== FINAL CTA ===================== */
+.final-cta{
+  padding:140px 0; text-align:center; position:relative;
+  background:radial-gradient(ellipse 70% 60% at 50% 30%, rgba(212,175,55,0.09), transparent 70%);
+}
+.final-cta h2{ font-size:clamp(30px,4vw,50px); max-width:820px; margin:0 auto 20px; line-height:1.2; }
+.final-cta .sub{ color:var(--text-muted); font-size:17px; max-width:520px; margin:0 auto 40px; }
+.pulse-btn{ animation:pulse-glow 2.6s ease-in-out infinite; }
+@keyframes pulse-glow{
+  0%,100%{ box-shadow:0 0 20px rgba(20,160,115,0.35), 0 0 0px rgba(212,175,55,0); }
+  50%{ box-shadow:0 0 40px rgba(20,160,115,0.6), 0 0 50px rgba(212,175,55,0.25); }
+}
+
+/* ===================== FOOTER ===================== */
+footer{ border-top:1px solid var(--border); padding:60px 0 34px; }
+.footer-top{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; margin-bottom:40px; }
+.footer-links{ display:flex; gap:26px; flex-wrap:wrap; }
+.footer-links a{ font-size:13px; color:var(--text-muted); transition:color 0.3s ease; }
+.footer-links a:hover{ color:var(--gold); }
+.footer-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; font-size:12px; color:var(--text-muted); border-top:1px solid var(--border); padding-top:24px; }
+.footer-legal{ display:flex; gap:20px; }
+.footer-legal a{ color:var(--text-muted); }
+.footer-legal a:hover{ color:var(--gold); }
+
+@media(max-width:640px){
+  .section{ padding:90px 0; }
+  .hero{ padding:130px 0 60px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-wash"></div>
+<canvas id="ash-canvas"></canvas>
+
+
+<!-- ===================== NAV ===================== -->
+<header class="nav" id="siteNav">
+  <div class="container nav-inner">
+    <a href="#top" class="logo">SI <span>STUDIO</span></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#work" onclick="closeNav()">Work</a>
+      <a href="#process" onclick="closeNav()">Process</a>
+      <a href="#testimonials" onclick="closeNav()">Testimonials</a>
+      <a href="#faq" onclick="closeNav()">FAQ</a>
+      <a class="nav-cta" href="#contact" onclick="closeNav()">Book a Consultation</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ===================== 1. HERO ===================== -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow reveal">Welcome to SI Studio</p>
+        <h1 class="reveal reveal-delay-1">A website shouldn't just look good. It should <em>bring business.</em></h1>
+        <p class="sub reveal reveal-delay-2">We design high-converting websites that generate enquiries and sales.</p>
+        <div class="hero-primary-cta reveal reveal-delay-3">
+          <a href="#contact" class="btn btn-primary">Turn Your Website Into a Lead Generation Engine</a>
+        </div>
+        <div class="btn-row reveal reveal-delay-4">
+          <a href="#work" class="btn btn-secondary">View Our Work</a>
+          <a href="#contact" class="btn btn-ghost">Book a Free Consultation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2. WHY BUSINESSES CHOOSE US ===================== -->
+  <section class="section" id="why">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="section-eyebrow">Why Businesses Choose Us</p>
+        <h2>People buy outcomes, not websites</h2>
+        <div class="divider-gold"></div>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card reveal">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 12l6 6L21 6"/></svg>
+          <h3>More Enquiries</h3>
+          <p>A design engineered to turn passive visitors into active leads.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2l3 7 7 1-5.5 5 1.5 7-6-3.5L6 22l1.5-7L2 10l7-1z"/></svg>
+          <h3>Premium Brand Image</h3>
+          <p>A visual identity that signals trust and credibility instantly.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M13 2L3 14h7l-1 8 11-14h-7l1-6z"/></svg>
+          <h3>Faster Website</h3>
+          <p>Lightweight, optimized builds that load fast on every device.</p>
+        </div>
+        <div class="feature-card reveal">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+          <h3>Mobile Optimized</h3>
+          <p>Every layout is crafted mobile-first, never an afterthought.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          <h3>SEO-Ready</h3>
+          <p>Built on semantic, search-friendly foundations from day one.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M12 6v6l4 2"/></svg>
+          <h3>Future Support &amp; Revisions</h3>
+          <p>We stay on after launch to keep your site sharp and current.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3. TESTIMONIALS ===================== -->
+  <section class="section" id="testimonials">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="section-eyebrow">Testimonials</p>
+        <h2>Some of our satisfied clients</h2>
+        <div class="divider-gold"></div>
+      </div>
+
+      <div class="stats-row reveal">
+        <div class="stat"><div class="num" data-count="28">0</div><div class="label">Projects Done</div></div>
+        <div class="stat"><div class="num" data-count="99.9" data-decimal="1">0</div><div class="label">% Satisfied Customers</div></div>
+      </div>
+
+      <!-- Featured testimonials wrapped in FlameRing -->
+      <div class="testimonial-featured-row">
+        <div class="flame-ring reveal">
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p class="quote">"Really happy with the final result. The design looks stunning, and the support was helpful from start to finish."</p>
+            <div class="testimonial-person">
+              <div class="avatar">AS</div>
+              <div><div class="person-name">Dr Asutosh Sharma</div><div class="person-role">Client</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="flame-ring reveal reveal-delay-1">
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p class="quote">"I wasn't sure what to expect at first, but the final result genuinely impressed me. Changes were handled quickly."</p>
+            <div class="testimonial-person">
+              <div class="avatar">DP</div>
+              <div><div class="person-name">Dipak Pahuja</div><div class="person-role">Client</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="flame-ring reveal reveal-delay-2">
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p class="quote">"Very easy to work with. Communication was clear, delivered on time, exactly what I was looking for."</p>
+            <div class="testimonial-person">
+              <div class="avatar">SD</div>
+              <div><div class="person-name">Sam D</div><div class="person-role">Client</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-grid">
+        <div class="testimonial-card small reveal">
+          <div class="stars">★★★★★</div>
+          <p class="quote">"Stunning result. Generous person. Love it."</p>
+          <div class="testimonial-person">
+            <div class="avatar">C</div>
+            <div><div class="person-name">Caroline</div><div class="person-role">Client</div></div>
+          </div>
+        </div>
+        <div class="testimonial-card small reveal reveal-delay-1">
+          <div class="stars">★★★★★</div>
+          <p class="quote">"Honestly, I'm really happy with the result. The design looks clean and professional, and the whole process was smooth."</p>
+          <div class="testimonial-person">
+            <div class="avatar">TK</div>
+            <div><div class="person-name">T.V Kalyan</div><div class="person-role">Client</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 4. SELECTED PROJECTS ===================== -->
+  <section class="section" id="work">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="section-eyebrow">Some of Our Excellent Projects</p>
+        <h2>Top selected by clients</h2>
+        <div class="divider-gold"></div>
+      </div>
+      <div class="project-grid">
+
+        <div class="project-card reveal">
+          <div class="project-thumb"><span class="glyph">I</span></div>
+          <div class="project-body">
+            <p class="project-tag">Web Design</p>
+            <h3>Sample Web — Project One</h3>
+            <a class="project-live-btn" href="https://irfan13ahmed2818-max.github.io/sample-web-5/" target="_blank" rel="noopener noreferrer">Live Preview →</a>
+          </div>
+        </div>
+
+        <div class="project-card reveal reveal-delay-1">
+          <div class="project-thumb"><span class="glyph">II</span></div>
+          <div class="project-body">
+            <p class="project-tag">Web Design</p>
+            <h3>Pivot Engine</h3>
+            <a class="project-live-btn" href="https://project-pivot-engine.lovable.app" target="_blank" rel="noopener noreferrer">Live Preview →</a>
+          </div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-thumb"><span class="glyph">III</span></div>
+          <div class="project-body">
+            <p class="project-tag">Web Design</p>
+            <h3>Charming Chamber Decor</h3>
+            <a class="project-live-btn" href="https://charming-chamber-decor.lovable.app" target="_blank" rel="noopener noreferrer">Live Preview →</a>
+          </div>
+        </div>
+
+        <div class="project-card reveal reveal-delay-1">
+          <div class="project-thumb"><span class="glyph">IV</span></div>
+          <div class="project-body">
+            <p class="project-tag">Web Design</p>
+            <h3>Gleam Hub</h3>
+            <a class="project-live-btn" href="https://gleam-hub-web.lovable.app" target="_blank" rel="noopener noreferrer">Live Preview →</a>
+          </div>
+        </div>
+
+        <!-- Confidential project: original reference was a local dev URL, does not resolve once deployed -->
+        <div class="project-card confidential reveal" style="grid-column:1 / -1;">
+          <div class="project-thumb"><span class="glyph">V</span></div>
+          <div class="project-body">
+            <p class="project-tag">Confidential</p>
+            <h3>Confidential Project — Preview Available on Request</h3>
+            <a class="project-live-btn" href="mailto:hello@sistudio.com?subject=Preview%20Request%20-%20Confidential%20Project">Request Preview →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5. FAQ ===================== -->
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="section-eyebrow">Frequently Asked Questions</p>
+        <h2>Answers before you ask</h2>
+        <div class="divider-gold"></div>
+      </div>
+      <div class="faq-list" id="faqList">
+
+        <div class="faq-item">
+          <button class="faq-q">Will a better website actually help my business grow?<span class="plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">A great website won't magically grow a business, but it can make a real difference. When visitors trust your business within seconds, they're far more likely to contact you instead of leaving for a competitor.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">Why shouldn't I just use a cheap template?<span class="plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">Templates can work for some businesses, but they rarely reflect your brand or your goals. A website built around your business is designed to create trust, improve user experience, and encourage more enquiries.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">What happens if I keep my current website?<span class="plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">If your current website is already bringing consistent results, there's no reason to change it. But if visitors are leaving without contacting you, your website may be costing you opportunities without you realizing it.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">How long does it take to launch?<span class="plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">Most projects are completed within a few weeks, depending on the scope. We focus on delivering a polished website that's built to perform — not rushing something you'll have to replace later.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">Why should I choose you over another agency?<span class="plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">Because we focus on results, not just design. Every decision — from layout to performance — is made to help your business look more credible, build trust, and convert more visitors into customers.</div></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 6. OUR PROCESS ===================== -->
+  <section class="section" id="process">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="section-eyebrow">Our Process</p>
+        <h2>From first conversation to launch</h2>
+        <div class="divider-gold"></div>
+      </div>
+      <div class="process-wrap">
+        <div class="timeline" id="timeline">
+          <div class="timeline-step reveal">
+            <p class="timeline-num">Step One</p>
+            <h3>Discovery</h3>
+            <p>We learn your business, your goals, and where your current site is losing customers.</p>
+          </div>
+          <div class="timeline-step reveal reveal-delay-1">
+            <p class="timeline-num">Step Two</p>
+            <h3>Strategy</h3>
+            <p>We map the structure and messaging that will move visitors toward enquiry.</p>
+          </div>
+          <div class="timeline-step reveal reveal-delay-2">
+            <p class="timeline-num">Step Three</p>
+            <h3>Design</h3>
+            <p>A premium visual identity is crafted around your brand and audience.</p>
+          </div>
+          <div class="timeline-step reveal reveal-delay-3">
+            <p class="timeline-num">Step Four</p>
+            <h3>Development</h3>
+            <p>Your site is built clean, fast, and fully responsive across devices.</p>
+          </div>
+          <div class="timeline-step reveal reveal-delay-4">
+            <p class="timeline-num">Step Five</p>
+            <h3>Launch &amp; Support</h3>
+            <p>We launch with confidence and stay on hand for revisions and support.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 7. FINAL CTA ===================== -->
+  <section class="final-cta" id="contact">
+    <div class="container">
+      <h2 class="reveal">How Many Potential Customers Left Your Website Today?</h2>
+      <p class="sub reveal reveal-delay-1">Let's make sure tomorrow's visitors become your next enquiries.</p>
+      <a href="mailto:hello@sistudio.com?subject=Free%20Consultation%20Request" class="btn btn-primary pulse-btn reveal reveal-delay-2">Stop Losing Potential Customers</a>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <a href="#top" class="logo">SI <span>STUDIO</span></a>
+      <div class="footer-links">
+        <!-- placeholder contact links — replace with real business details -->
+        <a href="mailto:hello@sistudio.com">Email</a>
+        <a href="https://wa.me/10000000000" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a href="https://instagram.com/sistudio" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://linkedin.com/company/sistudio" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; <span id="year"></span> SI Studio. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ===================== NAV ===================== */
+const nav = document.getElementById('siteNav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+function closeNav(){ navLinks.classList.remove('open'); }
+
+/* ===================== RevealOnScroll ===================== */
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+revealEls.forEach(el => revealObserver.observe(el));
+
+/* ===================== FAQ Accordion ===================== */
+document.querySelectorAll('.faq-item').forEach(item => {
+  const q = item.querySelector('.faq-q');
+  q.addEventListener('click', () => {
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(o => o.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  });
+});
+
+/* ===================== Count-up stats ===================== */
+const countEls = document.querySelectorAll('.num[data-count]');
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseFloat(el.dataset.count);
+      const decimals = parseInt(el.dataset.decimal || '0');
+      const duration = 1600;
+      const start = performance.now();
+      function tick(now){
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = (target * eased).toFixed(decimals);
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+      countObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.6 });
+countEls.forEach(el => countObserver.observe(el));
+
+/* ===================== Process timeline active-step pulse ===================== */
+const steps = document.querySelectorAll('.timeline-step');
+const stepObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('active');
+  });
+}, { threshold: 0.5 });
+steps.forEach(s => stepObserver.observe(s));
+
+/* ===================== AshParticleField (Canvas) ===================== */
+(function AshParticleField(){
+  const canvas = document.getElementById('ash-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+  const BASE_COUNT = window.innerWidth < 700 ? 45 : 90;
+  let intensity = 1;
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize, { passive: true });
+  resize();
+
+  function rand(min, max){ return Math.random() * (max - min) + min; }
+
+  class Particle{
+    constructor(){ this.reset(true); }
+    reset(initial){
+      this.x = rand(0, w);
+      this.y = initial ? rand(0, h) : h + rand(0, 40);
+      this.r = rand(0.6, 2.2);
+      this.speedY = rand(0.15, 0.5);
+      this.drift = rand(-0.3, 0.3);
+      this.alpha = rand(0.15, 0.65);
+      this.flicker = rand(0.002, 0.01);
+      this.angle = rand(0, Math.PI * 2);
+      this.gold = Math.random() > 0.4;
+    }
+    update(){
+      this.y -= this.speedY * intensity;
+      this.angle += this.flicker * 10;
+      this.x += this.drift + Math.sin(this.angle) * 0.3;
+      if (this.y < -10) this.reset(false);
+      if (this.x < -10) this.x = w + 10;
+      if (this.x > w + 10) this.x = -10;
+    }
+    draw(){
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = this.gold
+        ? `rgba(212,175,55,${this.alpha})`
+        : `rgba(150,210,185,${this.alpha * 0.5})`;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < BASE_COUNT; i++) particles.push(new Particle());
+
+  // Increase intensity near CTA / statue sections
+  const intensifyTargets = document.querySelectorAll('#contact, .hero, #process');
+  const intensifyObserver = new IntersectionObserver((entries) => {
+    let boosted = false;
+    entries.forEach(entry => { if (entry.isIntersecting) boosted = true; });
+    intensity = boosted ? 1.7 : 1;
+  }, { threshold: 0.4 });
+  intensifyTargets.forEach(t => intensifyObserver.observe(t));
+
+  function loop(){
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+</script>
+</body>
+</html>
